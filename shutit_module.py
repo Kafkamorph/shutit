@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #The MIT License (MIT)
 #
 #Copyright (C) 2014 OpenBet Limited
@@ -29,19 +30,68 @@ import inspect
 
 # TODO: these don't belong here, but this module is 'top level' and doesn't
 # depend on any other shutit files.
+=======
+# The MIT License (MIT)
+# 
+# Copyright (C) 2014 OpenBet Limited
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# ITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+"""Abstract class that defines how a ShutIt module should be written.
+"""
+
+
+from six import with_metaclass, iteritems
+from abc import ABCMeta, abstractmethod
+import decimal
+import inspect
+
+
+# TODO: these don't belong here, but this module is 'top level' and doesn't depend on any other shutit files.
+>>>>>>> upstream/master
 class ShutItException(Exception):
 	"""Placeholder exception. Implementation TODO.
 	"""
 	pass
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> upstream/master
 class ShutItModuleError(ShutItException):
 	"""Placeholder exception. Implementation TODO.
 	"""
 	pass
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> upstream/master
 class ShutItFailException(ShutItException):
 	"""Placeholder exception. Implementation TODO.
 	"""
 	pass
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> upstream/master
 def shutit_method_scope(func):
 	"""Notifies the ShutIt object whenever we call a shutit module method.
 	This allows setting values for the 'scope' of a function.
@@ -49,6 +99,7 @@ def shutit_method_scope(func):
 	def wrapper(self, shutit):
 		"""Wrapper to call a shutit module method, notifying the ShutIt object.
 		"""
+<<<<<<< HEAD
 		shutit.module_method_start()
 		ret = func(self, shutit)
 		shutit.module_method_end()
@@ -57,6 +108,16 @@ def shutit_method_scope(func):
 
 class ShutItMeta(ABCMeta):
 	"""Abstract class that defines what a ShutIt module must implement to be registered.
+=======
+		ret = func(self, shutit)
+		return ret
+	return wrapper
+
+
+class ShutItMeta(ABCMeta):
+	"""Abstract class that defines what a ShutIt module must implement
+	to be registered.
+>>>>>>> upstream/master
 	"""
 	ShutItModule = None
 	def __new__(mcs, name, bases, local):
@@ -72,7 +133,11 @@ class ShutItMeta(ABCMeta):
 
 			# Wrap any of the ShutItModule (self, shutit) methods that have been
 			# overridden in a subclass
+<<<<<<< HEAD
 			for name, method in local.iteritems():
+=======
+			for name, method in iteritems(local):
+>>>>>>> upstream/master
 				if not hasattr(sim, name):
 					continue
 				if not callable(method):
@@ -90,6 +155,7 @@ class ShutItMeta(ABCMeta):
 			mcs.ShutItModule = cls
 		return cls
 
+<<<<<<< HEAD
 class ShutItModule(object):
 	"""Class that takes a ShutIt object and defines what a ShutIt module must implement to be registered.
 
@@ -114,21 +180,57 @@ class ShutItModule(object):
 
 	def __init__(self, module_id, run_order,
 			description='', depends=None, conflicts=None):
+=======
+
+class ShutItModule(with_metaclass(ShutItMeta)):
+	"""Class that takes a ShutIt object and defines what a ShutIt module must
+	implement to be registered.
+
+	Build order:
+
+		- Gather core config (build, remove, tag)
+		- Gather module-specific config
+		- FOR MODULE 0
+			- Build module 0
+		- FOR ALL MODULES:
+		- Determine dependency requirements are met
+		- Determine conflict requirements are met.
+			- Remove any modules that are configured for removal.
+			- Build if not installed
+			- Do repo work if not installed (commit, tag, push)
+			- Test all modules (in reverse)
+			- Finalize all modules
+		- FOR MODULE 0
+			- Do repo work on build
+	"""
+
+	def __init__(self, module_id, run_order, description='', maintainer='', depends=None, conflicts=None, delivery_methods=[]):
+>>>>>>> upstream/master
 		"""Constructor.
 		Sets up module_id, run_order, deps and conflicts.
 		Also checks types for safety.
 		"""
 		# Module id for the module (a string).
 		# Following the Java standard is recommended, eg 'com.bigcorp.project.alpha.mymodule'
+<<<<<<< HEAD
 		# Duplicate module ids are rejected if within the configured shutit_module_path.
 		self.module_id = module_id
 		if not isinstance(module_id,str):
 			err = str(module_id) + '\'s module_id is not a string'
 			print err
+=======
+		# Duplicate module ids are rejected if within the configured
+		# shutit_module_path.
+		self.module_id = module_id
+		if not isinstance(module_id, str):
+			err = str(module_id) + '\'s module_id is not a string'
+			print(err)
+>>>>>>> upstream/master
 			raise ShutItModuleError(err)
 		# run_order for the module (a float).
 		# It should be a float and not duplicated within the shutit_module path.
 		# Module 0 is special. It is expected to:
+<<<<<<< HEAD
 		#   - Set up a container (see setup.py)
 		#   - Set up pexpect children with relevant keys and populate shutit_global.pexpect_children.
 		if isinstance(run_order,float) or isinstance(run_order,str) or isinstance(run_order,int):
@@ -137,6 +239,20 @@ class ShutItModule(object):
 		if not isinstance(run_order,decimal.Decimal):
 			err = module_id + '\'s run order is not a decimal'
 			print err
+=======
+		#   - Set up a target (see shutit_setup.py)
+		#   - Set up pexpect children with relevant keys and populate
+		#     shutit_global.shutit_pexpect_children.
+		if (isinstance(run_order, float) or
+			isinstance(run_order, str) or
+			isinstance(run_order, int)):
+			run_order = decimal.Decimal(run_order)
+		# Check that run_order is a float - this will throw an error as a 
+		# side effect if float doesn't work.
+		if not isinstance(run_order, decimal.Decimal):
+			err = module_id + '\'s run order is not a decimal'
+			print(err)
+>>>>>>> upstream/master
 			raise ShutItModuleError(err)
 		self.run_order = run_order
 		# module ids depended on
@@ -148,22 +264,44 @@ class ShutItModule(object):
 		if conflicts is not None:
 			self.conflicts_with = [conflict for conflict in conflicts]
 		self.description = description
+<<<<<<< HEAD
+=======
+		self.maintainer  = maintainer
+		if delivery_methods == [] or delivery_methods == '':
+			# default to all
+			delivery_methods = ['ssh','dockerfile','bash','docker']
+		if type(delivery_methods) == str:
+			delivery_methods = [delivery_methods]
+		self.ok_delivery_methods = delivery_methods
+>>>>>>> upstream/master
 
 
 	########################################################################
 	# Abstract methods
 	########################################################################
+<<<<<<< HEAD
 	def get_config(self,shutit):
+=======
+	def get_config(self, shutit):
+>>>>>>> upstream/master
 		"""Gets all config items necessary for this module to be built
 		"""
 		return True
 
+<<<<<<< HEAD
 	def check_ready(self,shutit):
 		"""Checks whether we are ready to build this module.
 
 		This is called before the build, to ensure modules have
 		their requirements in place (eg files required to be available
 		in resources folders) before we commence the build.
+=======
+	def check_ready(self, shutit):
+		"""Checks whether we are ready to build this module.
+
+		This is called before the build, to ensure modules have
+		their requirements in place before we commence the build.
+>>>>>>> upstream/master
 		Checking whether the build will happen at all (and
 		therefore whether the check should take place) will be
 		determined by the framework.
@@ -172,7 +310,11 @@ class ShutItModule(object):
 		"""
 		return True
 
+<<<<<<< HEAD
 	def remove(self,shutit):
+=======
+	def remove(self, shutit):
+>>>>>>> upstream/master
 		"""Remove the module, which should ensure the module has been deleted
 		from the system.
 		
@@ -180,29 +322,45 @@ class ShutItModule(object):
 		"""
 		return False
 
+<<<<<<< HEAD
 	def start(self,shutit):
 		"""Run when module should be installed (is_installed() or configured to build is true)
+=======
+	def start(self, shutit):
+		"""Run when module should be installed (is_installed() or configured
+		to build is true)
+>>>>>>> upstream/master
 		Run after repository work.
 		Returns True if all started ok.
 		"""
 		return True
 
+<<<<<<< HEAD
 	def stop(self,shutit):
+=======
+	def stop(self, shutit):
+>>>>>>> upstream/master
 		"""Runs when module should be stopped.
 		Runs before repo work, and before finalize is called.
 		Returns True if all stopped ok.
 		"""
 		return True
 
+<<<<<<< HEAD
 	@abstractmethod
 	def is_installed(self,shutit):
 		"""Determines whether the module has been built in this container
+=======
+	def is_installed(self, shutit):
+		"""Determines whether the module has been built in this target host
+>>>>>>> upstream/master
 		already.
 		
 		Returns True if it is certain it's there, else False.
 		
 		Required.
 		"""
+<<<<<<< HEAD
 		pass
 
 	@abstractmethod
@@ -211,6 +369,13 @@ class ShutItModule(object):
 		has been set up.
 		If is_installed determines that the module is already there,
 		this is not run.
+=======
+		return shutit.is_shutit_installed(self.module_id)
+
+	@abstractmethod
+	def build(self, shutit):
+		"""Runs the build part of the module, which should ensure the module has been set up.  If is_installed determines that the module is already there, this is not run.
+>>>>>>> upstream/master
 		
 		Returns True if it has succeeded in building, else False.
 		
@@ -218,15 +383,25 @@ class ShutItModule(object):
 		"""
 		pass
 
+<<<<<<< HEAD
 	def test(self,shutit):
+=======
+	def test(self, shutit):
+>>>>>>> upstream/master
 		"""Tests the module is OK.
 		Returns True if all is OK, else False.
 		This is run regardless of whether the module is installed or not.
 		"""
 		return True
 
+<<<<<<< HEAD
 	def finalize(self,shutit):
 		"""Finalize the module, ie do things that need doing after final module has been run and before we exit, eg updatedb.
+=======
+	def finalize(self, shutit):
+		"""Finalize the module, ie do things that need doing after final module
+		has been run and before we exit, eg updatedb.
+>>>>>>> upstream/master
 		"""
 		return True
 
